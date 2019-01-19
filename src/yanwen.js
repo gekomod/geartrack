@@ -4,7 +4,10 @@ const request = require('requestretry').defaults({ maxAttempts: 2, retryDelay: 1
 const parser = require('cheerio')
 const utils = require('./utils')
 const moment = require('moment-timezone')
-const zone = "Asia/Shanghai" // +8h
+const cheerio = require('cheerio'),
+    cheerioTableparser = require('cheerio-tableparser');
+const tabletojson = require('tabletojson');
+const zone = "Asia/Chongqing" // +8h
 
 const URL = 'http://track.yw56.com.cn/en-US'
 
@@ -33,7 +36,7 @@ yanwen.getInfo = function (id, callback) {
             console.log('response.statusCode: ', response.statusCode)
             return callback(utils.errorDown())
         }
-
+ 
         if (body.indexOf('The shipment barcode was not found.') != -1){
             return callback(utils.errorNoData())
         }
@@ -55,44 +58,49 @@ yanwen.getInfo = function (id, callback) {
 }
 
 function createYanwenEntity(id, html) {
-    let $ = parser.load(html)
-    let trs = $('table tbody tr')
+    let $ = cheerio.load(html,{
+    withDomLvl1: true,
+    normalizeWhitespace: false,
+    xmlMode: false,
+    decodeEntities: true
+});
+    cheerioTableparser($);
+    let trs1 = $('#'+id+' table tbody tr')
+    let trs2 = $('#'+id+' table')
+    let trs = $('#'+id).parsetable(true, true, true);
+    
+    const converted = tabletojson.convert(html);
 
-    if(!trs || trs.length == 0) return null;
-
-    let destiny;
-    let origin;
-
-    let states = utils.tableParser(
-        trs,
+    let origin = trs[1][0];
+    let destiny = trs[1][1];
+    
+    /*const states = utils.tableParser(
+        trs1,
         {
             'date': {'idx': 1, 'mandatory': true, 'parser': elem => { return moment.tz( elem, 'YYYY-MM-DD HH:mm', zone).format()}},
             'state': { 'idx': 3, 'mandatory': true }
         },
         (elem) => {
-            if(elem.children !== undefined
-                && elem.children[1].children !== undefined
-                && elem.children[1].children[0].children !== undefined
-                && elem.children[1].children[0].children[0].data != undefined) {
-                if (elem.children[1].children[0].children[0].data.indexOf('Country') != -1) {
-                    if (elem.children[1].children[0].children[0].data.indexOf('Origin') != -1) {
-                        origin = elem.children[3].children[0].children[0].data.trim()
-                    } else {
-                        destiny = elem.children[3].children[0].children[0].data.trim()
-                    }
-                    return false;
-                }
-                return true;
-            }
-            return true;
+            origin = elem.children[3].children[0].children[0].data.trim()
+            destiny = elem.children[3].children[0].children[0].data.trim()
+            console.log("DEMO: ", destiny);
         })
+        */
 
     return new YanwenInfo({
         'id': id,
         'origin': origin,
         'destiny': destiny,
-        'states': states
+        'states': converted[0].map((elem) => {
+            let date = elem['Origin Country']
+            return {
+                state: elem[1],
+                date: moment.tz(date, "YYYY-MM-DD HH:mm:ss", 'pl', zone).format(),
+                area: null
+            }
+        })
     })
+    
 }
 
 /*
@@ -100,7 +108,7 @@ function createYanwenEntity(id, html) {
  | Entity
  |--------------------------------------------------------------------------
  */
-function YanwenInfo(obj) {
+function YanwenInfo(obj){
     this.id = obj.id
     this.origin = obj.origin
     this.destiny = obj.destiny
@@ -110,6 +118,7 @@ function YanwenInfo(obj) {
     })
     this.state = this.states[0].state
     this.trackerWebsite = yanwen.getLink(null)
+   
 }
 
 yanwen.getLink = function (id) {
