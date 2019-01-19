@@ -1,23 +1,6 @@
-# Geartrack 1.0 (No further updates to this version)
+# Geartrack 1.1
 
 [![NPM](https://nodei.co/npm/geartrack.png?downloads=true&downloadRank=true&stars=true)](https://nodei.co/npm/geartrack/)
-
-[![Join the chat at https://gitter.im/hdnpt/geartrack](https://badges.gitter.im/hdnpt/geartrack.svg)](https://gitter.im/hdnpt/geartrack?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Travis](https://img.shields.io/travis/rust-lang/rust.svg?style=plastic)](https://github.com/hdnpt/geartrack)
-[![David](https://img.shields.io/david/strongloop/express.svg?style=plastic)](https://github.com/hdnpt/geartrack)
-[![Known Vulnerabilities](https://snyk.io/test/github/hdnpt/geartrack/badge.svg)](https://snyk.io/test/github/hdnpt/geartrack)
-[![GitHub release](https://img.shields.io/github/release/qubyte/rubidium.svg?style=plastic)](https://github.com/hdnpt/geartrack)
-[![license](https://img.shields.io/github/license/mashape/apistatus.svg?style=plastic)](https://github.com/hdnpt/geartrack)
-[![Website](https://img.shields.io/website-up-down-green-red/http/shields.io.svg)](https://geartrack.pt/)
-
-**Geartrack 2.0 is under development, this version will no longer be mantained. Use the online version which will always be updated :)**
-
-## API to track shippments from Gearbest & Aliexpress
-Online version: [https://geartrack.pt](https://geartrack.pt)
-
-This library scrapes the websites providers for shipping information.
-
-## Supported Methods
 
 ### Gearbest supported ids
 - Sky56:
@@ -79,6 +62,7 @@ You just need to replace [Tracker] for one of the following available trackers:
 - panasia
 - parcelTracker
 - dhl
+- Poczta Polska
 - track24
 
 // Get adicional info
@@ -91,6 +75,7 @@ geartrack.adicional.getInfo(id, postalcode, (err, TrakerInfo) => {
 ```
 
 ### Changelog
+- 18/01/2019 - Added support for Poczta Polska
 - 17/05/2017 - Added support for track24
 - 17/05/2017 - Added support for DHL
 - 16/05/2017 - Added support for Parcel Tracker
