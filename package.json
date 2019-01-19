@@ -1,6 +1,6 @@
 {
   "name": "geartrack",
-  "version": "2.8.10",
+  "version": "2.8.11",
   "description": "Tracking providers for Gearbest and AliExpress Orders.",
   "main": "index.js",
   "keywords": [
@@ -32,7 +32,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/hdnpt/geartrack.git"
+    "url": "https://github.com/gekomod/geartrack.git"
   },
   "devDependencies": {
     "jest": "^20.0.4"
